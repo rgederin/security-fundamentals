@@ -132,6 +132,6 @@ There are different sources for creating one-time passwords. Most Popular:
 * Randomly generated codes transmitted to the user via SMS or other communication channel. In this situation, the ownership factor is the user's phone (more precisely, a SIM card tied to a specific number).
 * Printout or scratch card with a list of pre-generated one-time passwords. For each new login, you must enter a new one-time password with the specified number.
 
-![device](https://github.com/rgederin/security-fundamentals/blob/master/img/device.jpg)
+![device](https://github.com/rgederin/security-fundamentals/blob/master/img/devaice.jpg)
 
 In web applications, this authentication mechanism is often implemented by extending the forms authentication: after initial authentication by the password, a user session is created, however, in the context of this session, the user does not have access to the application until it performs additional authentication over the one-time password.
