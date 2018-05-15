@@ -79,3 +79,43 @@ There are only a few places where you can pass username and password in HTTP req
 * Request body is a secure option, but it is only applicable to queries that contain the message body (such as POST, PUT, PATCH).
 
 * The HTTP header is the optimal version, with the standard Authorization header (for example, with the Basic schema), and other arbitrary headers.
+
+## Common vulnerabilities and implementation errors
+
+Password authentication is considered not a very reliable way, as passwords can often be found, and users tend to use simple and identical passwords in different systems, or write them on scraps of paper. If an attacker could find out the password, the user often does not know about it. In addition, application developers can allow a number of conceptual errors that simplify the hacking of accounts.
+
+Below is a list of the most common vulnerabilities in the case of using password authentication:
+
+* The web application allows users to create simple passwords.
+* The web application is not protected against brute-force attacks.
+* The Web application itself generates and distributes passwords to users, but does not require changing the password after the first login (ie the current password is somewhere recorded).
+* A web application allows the transfer of passwords over an unprotected HTTP connection or in a URL string.
+* The web application does not use secure hash functions to store user passwords.
+* The web application does not allow users to change the password or not notify users about changing their passwords.
+* The Web application uses a vulnerable password recovery feature that can be used to gain unauthorized access to other accounts.
+* The web application does not require re-authentication of the user for important actions: changing the password, changing the delivery address of the goods, etc.
+* A web application creates session tokens in such a way that they can be matched or predicted for other users.
+* A web application allows for passing session tokens over an unprotected HTTP connection, or in a URL string.
+* The Web application is vulnerable to session fixation attacks (that is, it does not replace the session token when anonymous user session goes to authenticated).
+* The Web application does not set the HttpOnly and Secure flags for browser cookies that contain session tokens.
+* The web application does not destroy the user session after a short inactivity period or does not provide a function to exit from the authenticated session.
+
+# Certificate-based Authentication
+
+A certificate is a set of attributes that identify the owner, signed by a certificate authority (CA). CA acts as an intermediary, which guarantees the authenticity of certificates. Also, the certificate is cryptographically associated with the private key, which is stored by the certificate owner and allows you to unambiguously confirm the fact of ownership of the certificate.
+
+On the client side, the certificate along with the private key can be stored in the operating system, in the browser, in a file, on a separate physical device (smart card, USB token). Usually the private key is additionally protected by a password or a PIN.
+
+In web applications, the X.509 standard is traditionally used. Authentication with the X.509 certificate occurs when you connect to the server and is part of the SSL / TLS protocol. This mechanism is also well supported by browsers that allow the user to select and apply a certificate if the website allows such an authentication method.
+
+![certificate](https://github.com/rgederin/security-fundamentals/blob/master/img/certificate.png)
+
+During authentication, the server performs a certificate check based on the following rules:
+
+* The certificate must be signed by a trusted certification authority.
+* The certificate must be valid for the current date (validation of the validity period).
+* The certificate must not be revoked by the appropriate CA (check exclusion lists).
+
+After successful authentication, the web application can perform query authorization based on certificate data such as subject, issuer, serial number or thumbprint.
+
+The use of certificates for authentication is a much more reliable method than authentication through passwords. This is achieved by creating in the authentication process a digital signature, the presence of which proves the fact of using the private key in a particular situation (non-repudiation). However, the difficulty with the distribution and support of certificates makes this method of authentication inaccessible in wide circles.
