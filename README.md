@@ -67,3 +67,15 @@ An application can create a session token in two ways:
 * As an encrypted and / or signed object containing user data, as well as the validity period. This approach makes it possible to implement the stateless-server architecture, but it requires a mechanism for updating the session token after the expiration. Several standard formats for such tokens are discussed in the section "Authentication by tokens".
 
 It should be understood that intercepting session token often gives a similar level of access as username / password. Therefore, all communications between the client and the server in the case of forms authentication must be performed only over a secure HTTPS connection.
+
+## Other password-based protocols
+
+The two protocols described above are successfully used to authenticate users on websites. But when developing client-server applications using web services (for example, iOS or Android), along with HTTP authentication, non-standard protocols are often used in which data for authentication is transmitted in other parts of the request.
+
+There are only a few places where you can pass username and password in HTTP requests:
+
+* URL query - is considered an unsafe option, because URL strings can be remembered by browsers, proxies and web servers.
+
+* Request body is a secure option, but it is only applicable to queries that contain the message body (such as POST, PUT, PATCH).
+
+* The HTTP header is the optimal version, with the standard Authorization header (for example, with the Basic schema), and other arbitrary headers.
