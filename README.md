@@ -35,7 +35,7 @@ It is important that when using HTTP authentication, the user does not have the 
 
 Basic is the simplest scheme, in which the user's username and password are transmitted in the Authorization header in plaintext (base64-encoded). However, when using the HTTPS (HTTP over SSL) protocol, it is relatively secure.
 
-![basic](https://github.com/rgederin/data-formats/blob/master/img/basic.png)
+![basic](https://github.com/rgederin/security-fundamentals/blob/master/img/basic.png)
 
 ### Digest
 Digest access authentication is one of the agreed-upon methods a web server can use to negotiate credentials, such as username or password, with a user's web browser. This can be used to confirm the identity of a user before sending sensitive information, such as online banking transaction history. It applies a hash function to the username and password before sending them over the network. In contrast, basic access authentication uses the easily reversible Base64 encoding instead of encryption, making it non-secure unless used in conjunction with TLS.
@@ -58,7 +58,7 @@ For this protocol there is no definite standard, therefore all its implementatio
 
 It works on the following principle: an HTML form is included in the web application, into which the user must enter his username / password and send them to the server via HTTP POST for authentication. If successful, the web application creates a session token, which is usually placed in browser cookies. On subsequent web requests, session token is automatically passed to the server and allows the application to retrieve information about the current user to authorize the request.
 
-![from](https://github.com/rgederin/data-formats/blob/master/img/basic.png)
+![from](https://github.com/rgederin/security-fundamentals/blob/master/img/basic.png)
 
 An application can create a session token in two ways:
 
