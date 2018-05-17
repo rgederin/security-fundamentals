@@ -1,3 +1,29 @@
+
+- [TLS/SSL](#tlsssl)
+- [Public key certificate](#public-key-certificate)
+    * [X509](#X509)
+- [Certificate authority](#certificate-authority)
+    * [Issuing a certificate](#issuing-a-certificate)
+- [Encryption](#encryption)
+    * [Symmetric-key encryption](#symmetric-key-encryption)
+    * [Asymmetric encryption](#asymmetric-encryption)
+- [Cryptographic hash function](#cryptographic-hash-function)
+    * [Applications](#applications)
+- [Key derivation function](#key-derivation-function)
+    * [PBKDF2](#pbkdf2)
+    * [Salt](#salt)
+- [SSO](#sso)
+- [CAS](#cas)
+- [Multi-factor authentication](#multi-factor-authentication)
+- [Authentication vs Authorization](#authentication-vs-authorization)
+- [Password-based authentication](#password-based-authentication)
+    * [HTTP](#http)
+    * [Forms authentication](#forms-authentication)
+    * [Other password-based protocols](#other-password-based-protocols)
+    * [Common vulnerabilities and implementation errors](#common-vulnerabilities-and-implementation-errors)
+- [Certificate-based Authentication](#certificate-based-authentication)    
+- [Authentication for one-time passwords](#authentication-for-one-time-passwords)   
+    
 # TLS/SSL
 
 Transport Layer Security (TLS) – and its predecessor, Secure Sockets Layer (SSL), which is now deprecated by the Internet Engineering Task Force (IETF) – are cryptographic protocols that provide communications security over a computer network. Several versions of the protocols find widespread use in applications such as web browsing, mail, instant messaging, and voice over IP (VoIP). Websites are able to use TLS to secure all communications between their servers and web browsers.
@@ -43,7 +69,6 @@ In cryptography, X.509 is a standard that defines the format of public key certi
 Besides the format for certificates themselves, X.509 specifies certificate revocation lists as a means to distribute information about certificates that are no longer valid, and a certification path validation algorithm, which allows for certificates to be signed by intermediate CA certificates, which are in turn signed by other certificates, eventually reaching a trust anchor.
 
 ![x509](https://github.com/rgederin/security-fundamentals/blob/master/img/x509.png)
-
 
 # Certificate authority
 
@@ -176,6 +201,57 @@ Since salts do not have to be memorized by humans they can make the size of the 
 
 Cryptographic salts are broadly used in many modern computer systems, from Unix system credentials to Internet security.
 
+# SSO
+
+Single sign-on (SSO) is a property of access control of multiple related, yet independent, software systems. With this property, a user logs in with a single ID and password to gain access to a connected system or systems without using different usernames or passwords, or in some configurations seamlessly sign on at each system. This is typically accomplished using the Lightweight Directory Access Protocol (LDAP) and stored LDAP databases on (directory) servers.
+
+For clarity, it is best to refer to systems requiring authentication for each application but using the same credentials from a directory server as Directory Server Authentication and systems where a single authentication provides access to multiple applications by passing the authentication token seamlessly to configured applications as Single Sign-On.
+
+Conversely, single sign-off is the property whereby a single action of signing out terminates access to multiple software systems.
+
+As different applications and resources support different authentication mechanisms, single sign-on must internally store the credentials used for initial authentication and translate them to the credentials required for the different mechanisms.
+
+Other shared authentication schemes include OAuth, OpenID, OpenID Connect and Facebook Connect. However, these authentication schemes require the user to enter their login credentials each time they access a different site or application so they are not to be confused with SSO.
+
+![SSO](https://github.com/rgederin/security-fundamentals/blob/master/img/SSO.png)
+
+# CAS
+
+The Central Authentication Service (CAS) is a single sign-on protocol for the web. Its purpose is to permit a user to access multiple applications while providing their credentials (such as userid and password) only once. It also allows web applications to authenticate users without gaining access to a user's security credentials, such as a password. The name CAS also refers to a software package that implements this protocol.
+
+The CAS protocol involves at least three parties: a client web browser, the web application requesting authentication, and the CAS server. It may also involve a back-end service, such as a database server, that does not have its own HTTP interface but communicates with a web application.
+
+When the client visits an application requiring authentication, the application redirects it to CAS. CAS validates the client's authenticity, usually by checking a username and password against a database (such as Kerberos, LDAP or Active Directory).
+
+If the authentication succeeds, CAS returns the client to the application, passing along a service ticket. The application then validates the ticket by contacting CAS over a secure connection and providing its own service identifier and the ticket. CAS then gives the application trusted information about whether a particular user has successfully authenticated.
+
+The **Apereo CAS server** that is the reference implementation of the CAS protocol today supports the following features:
+
+* CAS v1, v2 and v3 Protocol
+* SAML v1 and v2 Protocol
+* OAuth Protocol
+* OpenID & OpenID Connect Protocol
+* WS-Federation Passive Requestor Protocol
+* Authentication via JAAS, LDAP, RDBMS, X.509, Radius, SPNEGO, JWT, Remote, Trusted, BASIC, Apache Shiro, MongoDB, Pac4J and more.
+* Delegated authentication to WS-FED, Facebook, Twitter, SAML IdP, OpenID, OpenID Connect, CAS and more.
+* Authorization via ABAC, Time/Date, REST, Internet2's Grouper and more.
+* HA clustered deployments via Hazelcast, Ehcache, JPA, Memcached, Apache Ignite, MongoDB, Redis, Couchbase and more.
+* Application registration backed by JSON, LDAP, YAML, JPA, Couchbase, MongoDB and more.
+* Multifactor authentication via Duo Security, YubiKey, RSA, Google Authenticator and more.
+* Administrative UIs to manage logging, monitoring, statistics, configuration, client registration and more.
+* Global and per-application user interface theme and branding.
+* Password management and password policy enforcement.
+
+# Multi-factor authentication
+
+Multi-factor authentication (MFA) is a method of confirming a user's claimed identity in which a user is granted access only after successfully presenting 2 or more pieces of evidence (or factors) to an authentication mechanism: knowledge (something they and only they know), possession (something they and only they have), and inherence (something they and only they are).
+
+Two-factor authentication (also known as 2FA) is a type (subset) of multi-factor authentication. It is a method of confirming a user's claimed identity by utilizing a combination of two different factors: 1) something they know, 2) something they have, or 3) something they are.
+
+A good example of two-factor authentication is the withdrawing of money from a ATM; only the correct combination of a bank card (something that the user possesses) and a PIN (personal identification number, something that the user knows) allows the transaction to be carried out.
+
+Two-step verification or two-step authentication is a method of confirming a user's claimed identity by utilizing something they know (password) and a second factor other than something they have or something they are. An example of a second step is the user repeating back something that was sent to them through an out-of-band mechanism. Or the second step might be a 6 digit number generated by an app that is common to the user and the authentication system.
+
 # Authentication vs Authorization
 
 * **Identification** is a statement of who you are. Depending on the situation, this can be a name, email address, account number, etc.
@@ -209,6 +285,7 @@ This protocol, described in the HTTP 1.0 / 1.1 standards, has existed for a very
 The whole process is standardized and well supported by all browsers and web servers. There are several authentication schemes that differ in terms of security:
 
 It is important that when using HTTP authentication, the user does not have the standard ability to exit the web application, except to close all browser windows.
+
 ### Basic
 
 Basic is the simplest scheme, in which the user's username and password are transmitted in the Authorization header in plaintext (base64-encoded). However, when using the HTTPS (HTTP over SSL) protocol, it is relatively secure.
