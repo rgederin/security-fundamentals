@@ -23,7 +23,8 @@
     * [Other password-based protocols](#other-password-based-protocols)
     * [Common vulnerabilities and implementation errors](#common-vulnerabilities-and-implementation-errors)
 - [Certificate-based Authentication](#certificate-based-authentication)    
-- [Authentication for one-time passwords](#authentication-for-one-time-passwords)   
+- [Authentication for one-time passwords](#authentication-for-one-time-passwords)
+- [Access keys authentication](#access-key-authentication)   
     
 # TLS/SSL
 
@@ -440,3 +441,15 @@ There are different sources for creating one-time passwords. Most Popular:
 ![device](https://github.com/rgederin/security-fundamentals/blob/master/img/devaice.jpg)
 
 In web applications, this authentication mechanism is often implemented by extending the forms authentication: after initial authentication by the password, a user session is created, however, in the context of this session, the user does not have access to the application until it performs additional authentication over the one-time password.
+
+# Access keys authentication
+
+This method is most often used to authenticate devices, services, or other applications when accessing Web services. Here, the access keys (access key, API key) are used as a secret - long unique strings containing an arbitrary set of characters, essentially replacing the combination username / password.
+
+In most cases, the server generates access keys at the request of users, who then store these keys in client applications. When creating a key, it is also possible to limit the validity period and the access level that the client application will receive when authenticating with this key
+
+The use of keys avoids the transfer of the user's password to third-party applications (in the example above, the user saved his password and the access key in the Web application). The keys have significantly more entropy compared to passwords, so they are almost impossible to find. In addition, if the key was opened, this does not compromise the main user account - just cancel this key and create a new one.
+
+From a technical point of view, there is no single protocol here: keys can be passed in different parts of the HTTP request: URL query, request body or HTTP header. As with password authentication, the best option is to use the HTTP header. In some cases, the Bearer HTTP scheme is used to transfer the token in the header (Authorization: Bearer [token]). To avoid interception of keys, connection with the server must be necessarily protected by the SSL / TLS protocol.
+
+![api-key](https://github.com/rgederin/security-fundamentals/blob/master/img/api-key.jpg)
