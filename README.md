@@ -27,6 +27,7 @@
 - [Access keys authentication](#access-keys-authentication)   
 - [Token based authentication](#token-based-authentication)
     * [SWT](#swt)
+    * [SAML](#saml)
     * [JWT](#jwt)
     
 # TLS/SSL
@@ -462,6 +463,16 @@ From a technical point of view, there is no single protocol here: keys can be pa
 The next generation of authentication methods is represented by Token Based Authentication, which is commonly used when building Single Sign-On (SSO) systems. When it is used, the requested service delegates the function of verifying the authenticity of user information to another service. That is, the service provider trusts the issuance of the token proper for the token-provider itself. This is what we see, for example, entering applications through accounts on social networks. Outside of IT, the simplest analogy of this process is the use of a general passport. The official document is just a token issued to you - all public services trust the police department that handed it to him by default and consider the passport sufficient for your authentication throughout the validity period while maintaining its integrity.
 
 ![t-b](https://github.com/rgederin/security-fundamentals/blob/master/img/t-b.png)
+
+## SAML
+
+Security Assertion Markup Language (SAML) is an open standard for exchanging authentication and authorization data between parties, in particular, between an identity provider and a service provider. As its name implies, SAML is an XML-based markup language for security assertions (statements that service providers use to make access-control decisions). SAML is also:
+
+* A set of XML-based protocol messages
+* A set of protocol message bindings
+* A set of profiles (utilizing all of the above)
+
+The single most important use case that SAML addresses is web browser single sign-on (SSO). Single sign-on is relatively easy to accomplish within a security domain (using cookies, for example) but extending SSO across security domains is more difficult and resulted in the proliferation of non-interoperable proprietary technologies. The SAML Web Browser SSO profile was specified and standardized to promote interoperability. (For comparison, the more recent OpenID Connect protocol is an alternative approach to web browser SSO.)
 
 ## SWT
 
