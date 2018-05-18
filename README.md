@@ -24,7 +24,10 @@
     * [Common vulnerabilities and implementation errors](#common-vulnerabilities-and-implementation-errors)
 - [Certificate-based Authentication](#certificate-based-authentication)    
 - [Authentication for one-time passwords](#authentication-for-one-time-passwords)
-- [Access keys authentication](#access-key-authentication)   
+- [Access keys authentication](#access-keys-authentication)   
+- [Token based authentication](#token-based-authentication)
+    * [SWT](#swt)
+    * [JWT](#jwt)
     
 # TLS/SSL
 
@@ -452,4 +455,65 @@ The use of keys avoids the transfer of the user's password to third-party applic
 
 From a technical point of view, there is no single protocol here: keys can be passed in different parts of the HTTP request: URL query, request body or HTTP header. As with password authentication, the best option is to use the HTTP header. In some cases, the Bearer HTTP scheme is used to transfer the token in the header (Authorization: Bearer [token]). To avoid interception of keys, connection with the server must be necessarily protected by the SSL / TLS protocol.
 
-![api-key](https://github.com/rgederin/security-fundamentals/blob/master/img/api-key.jpg)
+![api-key](https://github.com/rgederin/security-fundamentals/blob/master/img/api-key.png)
+
+# Token based authentication
+
+The next generation of authentication methods is represented by Token Based Authentication, which is commonly used when building Single Sign-On (SSO) systems. When it is used, the requested service delegates the function of verifying the authenticity of user information to another service. That is, the service provider trusts the issuance of the token proper for the token-provider itself. This is what we see, for example, entering applications through accounts on social networks. Outside of IT, the simplest analogy of this process is the use of a general passport. The official document is just a token issued to you - all public services trust the police department that handed it to him by default and consider the passport sufficient for your authentication throughout the validity period while maintaining its integrity.
+
+![t-b](https://github.com/rgederin/security-fundamentals/blob/master/img/t-b.png)
+
+## SWT
+
+Simple Web Token (SWT) is the simplest format, which is a set of arbitrary name / value pairs in the HTML form encoding format. The standard defines several reserved names: Issuer, Audience, ExpiresOn and HMACSHA256. The token is signed using a symmetric key, so both IP and SP applications must have this key to create / verify the token.
+
+```
+Issuer=http://auth.myservice.com&
+Audience=http://myservice.com&
+ExpiresOn=1435937883&
+UserName=John Smith&
+UserRole=Admin&
+HMACSHA256=KOUQRPSpy64rvT2KnYyQKtFFXUIggnesSpE7ADA4o9w
+```
+
+## JWT
+
+JSON Web Token is a JSON-based open standard (RFC 7519) for creating access tokens that assert some number of claims. For example, a server could generate a token that has the claim "logged in as admin" and provide that to a client. The client could then use that token to prove that it is logged in as admin. The tokens are signed by one party's private key (usually the server's), so that both parties (the other already being, by some suitable and trustworthy means, in possession of the corresponding public key) are able to verify that the token is legitimate. The tokens are designed to be compact, URL-safe and usable especially in web browser single sign-on (SSO) context. JWT claims can be typically used to pass identity of authenticated users between an identity provider and a service provider, or any other type of claims as required by business processes.
+
+### Structure
+
+JWTs generally have three parts: a header, a payload, and a signature. The header identifies which algorithm is used to generate the signature, and looks something like this:
+
+```
+header = '{"alg":"HS256","typ":"JWT"}'
+```
+
+HS256 indicates that this token is signed using HMAC-SHA256.
+
+The payload contains the claims to make:
+
+```
+payload = '{"loggedInAs":"admin","iat":1422779638}'
+```
+
+As suggested in the JWT spec, a timestamp called iat (issued at) is installed.
+
+The signature is calculated by base64url encoding the header and payload and concatenating them with a period as a separator:
+```
+key           = 'secretkey'
+unsignedToken = encodeBase64Url(header) + '.' + encodeBase64Url(payload)
+signature     = HMAC-SHA256(key, unsignedToken) 
+```
+
+To put it all together, the signature is base64url encoded. The three separate parts are concatenated using periods:
+
+```
+token = encodeBase64Url(header) + '.' + encodeBase64Url(payload) + '.' + encodeBase64Url(signature) # token is now: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dnZWRJbkFzIjoiYWRtaW4iLCJpYXQiOjE0MjI3Nzk2Mzh9.gzSraSYS8EXBxLN_oWnFSRgCzcmJmMjLiuyu5CSpyHI 
+```
+
+The output is three Base64url strings separated by dots that can be easily passed in HTML and HTTP environments, while being more compact compared to XML-based standards such as SAML. Typical cryptographic algorithms used are HMAC with SHA-256 (HS256) and RSA signature with SHA-256 (RS256). JWA (JSON Web Algorithms) RFC 7518 introduces many more for both authentication and encryption
+
+![jwt1](https://github.com/rgederin/security-fundamentals/blob/master/img/jwt1.jpg)
+
+![jwt2](https://github.com/rgederin/security-fundamentals/blob/master/img/jwt2.png)
+
