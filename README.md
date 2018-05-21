@@ -528,3 +528,70 @@ The output is three Base64url strings separated by dots that can be easily passe
 
 ![jwt2](https://github.com/rgederin/security-fundamentals/blob/master/img/jwt2.png)
 
+# OpenID/OAuth/OpenID Connect
+
+* **OpenID** is an open standard and decentralized authentication protocol. Uses to verify the user's credentials (identification & authentication).
+
+* **OAuth** is an open standard for access delegation, commonly used as a way for Internet users to grant websites or applications access to their information on other websites but without giving them the passwords. **OAuth** is an **authorization protocol**, rather than an authentication protocol.
+
+* **OpenID Connect** (OIDC) is an authentication layer on top of OAuth 2.0, an authorization framework.
+
+All three protocols allow the user not to disclose their secret login and password to untrusted applications.
+
+OpenID & OAuth were developed in parallel until 2014 and merged as a result in OpenID connect.
+
+**OpenID 1.0** (2006) & **OpenID 2.0** (2007) allowed the application (arb) to request a user (user) from the trusted server (authority). The differences between the versions are insignificant for us.
+
+* User -> App: Hi, this is Misha.
+* App -> Authority: Is this "this" Misha?
+* Authority and User communicate tete-a-tete.
+* Authority -> App: Yes, it's Misha.
+
+**OpenID Attribute Exchange 1.0** (2007) extends OpenID 2.0 allowing you to receive and store a user profile.
+
+* User -> App: Hi, this is Misha.
+* App -> Authority: Is this "this" Misha? And if it's Misha, then send me his email.
+* Authority and User communicate tete-a-tete.
+* Authority -> App: Yes, it's Misha. And his email xxx@xxx.xxx.
+
+**OAuth 1.0** (2010) allows the user to allow the application to gain limited access on third-party servers that trust the certifying center.
+
+* App -> User: We would like your pictures from another server.
+* Authority and User communicate tete-a-tete.
+* Authority -> App: Here is an access token for 15 minutes.
+* App -> Third-party server: We can get photos for this user on the token.
+
+**OAuth 2.0** (2012) does the same thing as OAuth 1.0, but only the protocol has changed significantly and become easier.
+
+![oauth2](https://github.com/rgederin/security-fundamentals/blob/master/img/oauth2.png)
+
+**OpenID Connect** (2014) combines the capabilities of OpenID 2.0, OpenID Attribute Exchange 1.0, and OAuth 2.0 into one common protocol. It allows applications to use an identity center for:
+
+* Verify the user's credentials.
+* Obtain a user profile (or parts thereof).
+
+OpenID Connect is a simple identity layer on top of the OAuth 2.0 protocol, which allows computing clients to verify the identity of an end-user based on the authentication performed by an authorization server, as well as to obtain basic profile information about the end-user in an interoperable and REST-like manner. In technical terms, OpenID Connect specifies a RESTful HTTP API, using JSON as a data format.
+
+OpenID Connect allows a range of clients, including Web-based, mobile, and JavaScript clients, to request and receive information about authenticated sessions and end-users. The specification suite is extensible, supporting optional features such as encryption of identity data, discovery of OpenID Providers, and session management.
+
+OpenID Connect is a simple identity layer built on top of the OAuth 2.0 protocol. OAuth 2.0 defines mechanisms to obtain and use access tokens to access protected resources, but they do not define standard methods to provide identity information. OpenID Connect implements authentication as an extension to the OAuth 2.0 authorization process. It provides information about the end user in the form of an id_token that verifies the identity of the user and provides basic profile information about the user.
+
+## OpenID and OAuth
+
+OAuth is an authorization protocol, rather than an authentication protocol. Using OAuth on its own as an authentication method may be referred to as pseudo-authentication. The following diagrams highlight the differences between using OpenID (specifically designed as an authentication protocol) and OAuth for authentication
+
+The communication flow in both processes is similar:
+
+* (Not pictured) The user requests a resource or site login from the application.
+* The site sees that the user is not authenticated. It formulates a request for the identity provider, encodes it, and sends it to the user as part of a redirect URL.
+* The user's browser requests the redirect URL for the identity provider, including the application's request
+* If necessary, the identity provider authenticates the user (perhaps by asking them for their username and password)
+* Once the identity provider is satisfied that the user is sufficiently authenticated, it processes the application's request, formulates a response, and sends that back to the user along with a redirect URL back to the application.
+* The user's browser requests the redirect URL that goes back to the application, including the identity provider's response
+* The application decodes the identity provider's response, and carries on accordingly.
+* (OAuth only) The response includes an access token which the application can use to gain direct access to the identity provider's services on the user's behalf.
+* The crucial difference is that in the OpenID authentication use case, the response from the identity provider is an assertion of identity; while in the OAuth authorization use case, the identity provider is also an API provider, and the response from the identity provider is an access token that may grant the application ongoing access to some of the identity provider's APIs, on the user's behalf. The access token acts as a kind of "valet key" that the application can include with its requests to the identity provider, which prove that it has permission from the user to access those APIs.
+
+![oauth1](https://github.com/rgederin/security-fundamentals/blob/master/img/oauth1.png)
+
+Because the identity provider typically (but not always) authenticates the user as part of the process of granting an OAuth access token, it's tempting to view a successful OAuth access token request as an authentication method itself. However, because OAuth was not designed with this use case in mind, making this assumption can lead to major security flaws
