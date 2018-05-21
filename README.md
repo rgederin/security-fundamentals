@@ -594,4 +594,94 @@ The communication flow in both processes is similar:
 
 ![oauth1](https://github.com/rgederin/security-fundamentals/blob/master/img/oauth1.png)
 
-Because the identity provider typically (but not always) authenticates the user as part of the process of granting an OAuth access token, it's tempting to view a successful OAuth access token request as an authentication method itself. However, because OAuth was not designed with this use case in mind, making this assumption can lead to major security flaws
+Because the identity provider typically (but not always) authenticates the user as part of the process of granting an OAuth access token, it's tempting to view a successful OAuth access token request as an authentication method itself. However, because OAuth was not designed with this use case in mind, making this assumption can lead to major security flaws.
+
+## OAuth 2 and OpenID Connect
+
+Typically, there are different components in systems: users working through the browser, users that are interdependent with the server through mobile applications, and simply server applications that need resource resources stored on other servers accessed through the Web API.
+
+Single sign-on single sign-on technology-allows you to switch between different applications without having to re-authenticate. Using SSO, you can avoid multiple logins, so the user simply will not notice these switches. In this situation, when to some extent, there are always. Single sign-on is especially useful in large enterprise systems, consisting of dozens of applications, loosely coupled. It's unlikely that users will be happy with entering their login and password each time they access the timekeeping system, the corporate forum or the internal document base.
+
+As an implementation, we consider the OAuth2 protocol. In principle, there are others, for example, Kerberos, successfully interacting with Windows, but in the case of a heterogeneous network in which there are computers that use both Windows-, Mac-, and UNIX-systems, it is often inconvenient to use proprietary protocols. Moreover, this applies to cases where access to your services is carried out through the web - here OAuth2 is the best candidate.
+
+![oauth3](https://github.com/rgederin/security-fundamentals/blob/master/img/oauth3.png)
+
+## OAuth2 & OpenID connect terminilogy
+
+**Open ID Connect Provider**
+
+Open ID Connect Provider is the most important object of the entire design of the centralized authentication service, it can also be called Security Token Service, Identity Provider authorization server, etc. Different sources call it differently, but in meaning it is a service that issues tokens to clients.
+
+Main functions:
+
+* Authenticate users using internal user storage or an external source (for example, Active Directory).
+* Manage clients (store) and authenticate them.
+* Provide session management and the ability to implement Single sing-on.
+* Issue identity-tokens and access-tokens to clients.
+* Check for previously issued tokens.
+
+**Client**
+
+Client is a device or program (browser, application) that requires either a token for user authentication or a token for accessing a resource (it is understood that this resource is "signed" with that particular "Security Token Service" in which the client requests a token for access).
+
+**User**
+
+User - actually the end user - the person.
+
+**Scope**
+
+Scope - the identifier of the resource that the client wants to access. The scope list is sent to the token issuing service as part of the authentication request.
+
+By default, all clients have the ability to request any areas, but this can (and should) be limited in the configuration of the token issuance service.
+
+Scopes are of two types:
+
+* **Identity scopes** is a request for information about a user. His name, profile, sex, picture, email address, etc.
+* **Resource scopes** are the names of external resources (Web APIs) that the client wants to access.
+
+
+**Authentication Request**
+
+Authentication / Token Request is the authentication request process.
+
+Depending on what areas (scopes) are requested, the service of issuing tokens will return:
+
+* Only Identity Token if only Identity scopes are requested.
+* Identity Token and Access Token, if you also requested Resources scopes.
+* Access Token and Refresh Token if you are prompted for Offline Access.
+
+**Identity Token**
+
+Identity Token - authentication confirmation. This token contains a minimal set of information about the user.
+
+**Access Token**
+
+Access Token - information that a specific user is allowed to do. The client requests Access Token and then uses it to access resources (Web APIs). Access Token contains information about the client and the user, if present. It is important to understand that there are types of authorization in which the user does not directly participate in the process (for details, see section "authorization types").
+
+**Refresh Token**
+
+Refresh Token - a token on which STS will return a new Access Token. Depending on the mode, the Refresh Token operation can be reusable and one-time. In the case of a one-time token, when a new Access Token is requested, a ready-made Refresh Token will also be generated, which should be used for the second update. Obviously, disposable tokens are safer.
+
+**Authentication process**
+
+When a user contacts a client, the user redirects the user to the Open ID Connect Provider, which requests the user's login and password. If the authentication parameters are successfully passed, it returns the identity token and access token with which the user can access the protected resource.
+
+![oauth4](https://github.com/rgederin/security-fundamentals/blob/master/img/oauth4.png)
+
+The OAuth2 implementation uses the so-called jwt-token, which consists of three parts. Let's say that when you access the Identity provider you send a login / password and in return receive a token. It will include: Header (header), Payload (content) and Signature (signature). On the site jwt.io it can be decoded and viewed by the JSON format. On this site you will also find a description of the rules for the formation of jwt-tokens.
+
+The fact that tokens in the process of exchange are transmitted unencrypted, there is nothing terrible. We initially assume that communication takes place over a secure HTTPS channel, and re-encrypting the token would be redundant. The only thing we need to make sure of is that the token was not replaced or falsified on the client side, it's enough to have a signature and check it on the server. In addition, the token does not contain any critical information.
+
+In addition to identity tokens, there is also access tokens, which contain information about the stamps issued to the user. The access token is short enough, because its theft can provide unauthorized access to the resource. That is, an attacker, if he manages to get a token of this type, will get access for a very short time. To get a new access token, a refresh token is used, which usually does not appear in unprotected environments, in particular, in the mode of access from the browser it is not used at all.
+
+Standard fields in a token and what for they are necessary:
+
+* iss is the address or name of the certifying center.
+* sub is the user ID. Unique within the certification center, at the very least.
+* aud is the name of the client for which the token was released.
+* exp - the duration of the token.
+* nbf - the time from which it can be used (not earlier than).
+* iat - the time when the token was issued.
+* jti - unique identifier of the token (it is necessary that it is impossible to "release" the token a second time).
+
+![jwt3](https://github.com/rgederin/security-fundamentals/blob/master/img/jwt3.png)
